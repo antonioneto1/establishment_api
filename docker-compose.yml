@@ -10,7 +10,7 @@ services:
       context: .
     depends_on:
       - postgresql
-    working_dir: /home/user/base_app
+    working_dir: /home/user/establishment_api
     environment:
       BINDING: 0.0.0.0
       PORT: 3000
@@ -26,7 +26,7 @@ services:
       - ~/.ssh:/home/user/.ssh
       - ~/.gitconfig:/home/user/.gitconfig
       - ~/.bash_history:/home/user/.bash_history
-      - .:/home/user/base_app
+      - .:/home/user/establishment_api
   postgresql:
     image: postgres:14
     environment:

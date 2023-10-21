@@ -8,10 +8,10 @@ default: &default
 
 development:
   <<: *default
-  database: base_app_development
+  database: establishment_api_development
 test:
   <<: *default
-  database: base_app_test
+  database: establishment_api_test
 production:
   <<: *default
-  database: base_app_production
+  database: establishment_api_production
