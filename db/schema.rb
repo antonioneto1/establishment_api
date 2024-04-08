@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_04_06_161919) do
+ActiveRecord::Schema[7.0].define(version: 2024_04_08_182931) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -40,11 +40,19 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_06_161919) do
     t.string "state"
     t.string "zip_code"
     t.string "country"
-    t.jsonb "opening_hours"
+    t.time "opening_hours"
     t.jsonb "coordinates"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "owner_id", null: false
+    t.string "fantasy_name"
+    t.string "name"
+    t.string "phone"
+    t.string "whatsapp"
+    t.string "cnpj"
+    t.string "category"
+    t.string "email"
+    t.time "closing_time"
     t.index ["owner_id"], name: "index_establishments_on_owner_id"
   end
 

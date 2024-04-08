@@ -1,64 +1,52 @@
 class Api::V1::EstablishmentsController < Api::V1::ApiController
-  before_action :set_establishment, only: %i[ show edit update destroy ]
+  before_action :set_establishment, only: %i[show edit update destroy]
 
   # GET /establishments or /establishments.json
   def index
     @establishments = Establishment.all
+    render json: @establishments
   end
 
   # GET /establishments/1 or /establishments/1.json
   def show
-  end
-
-  # GET /establishments/new
-  def new
-    @establishment = Establishment.new
-  end
-
-  # GET /establishments/1/edit
-  def edit
+    render json: @establishment
   end
 
   # POST /establishments or /establishments.json
   def create
-    response = EstablishmentService.new(establishment_params).run
-
-    respond_to do |format|
-      format.json { render json: response }
+    @establishment = EstablishmentService.new(establishment_params).run
+    if @establishment[:success]
+      render json: @establishment, status: :created
+    else
+      render json: @establishment.error, status: :unprocessable_entity
     end
   end
 
   # PATCH/PUT /establishments/1 or /establishments/1.json
   def update
-    respond_to do |format|
-      if @establishment.update(establishment_params)
-        format.html { redirect_to establishment_url(@establishment), notice: "Establishment was successfully updated." }
-        format.json { render :show, status: :ok, location: @establishment }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @establishment.errors, status: :unprocessable_entity }
-      end
+    if @establishment.update(establishment_params)
+      render json: @establishment, status: :ok
+    else
+      render json: @establishment.errors, status: :unprocessable_entity
     end
   end
 
   # DELETE /establishments/1 or /establishments/1.json
   def destroy
     @establishment.destroy
-
-    respond_to do |format|
-      format.html { redirect_to establishments_url, notice: "Establishment was successfully destroyed." }
-      format.json { head :no_content }
-    end
+    head :no_content
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_establishment
-      @establishment = Establishment.find(params[:id])
-    end
 
-    # Only allow a list of trusted parameters through.
-    def establishment_params
-      params.require(:establishment).permit(:street, :city, :state, :zip_code, :country, :opening_hours)
-    end
+  def set_establishment
+    @establishment = Establishment.find(params[:id])
+  end
+
+  def establishment_params
+    params.require(:establishment).permit(
+      :name, :fantasy_name, :category, :cnpj, :phone, :whatsapp, :email, :owner_id,
+      :opening_hours, :closing_time, address: %I[street city state zip_code country]
+    )
+  end
 end

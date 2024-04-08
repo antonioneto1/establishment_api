@@ -6,7 +6,7 @@ class CreateEstablishments < ActiveRecord::Migration[7.0]
       t.string :state
       t.string :zip_code
       t.string :country
-      t.jsonb :opening_hours
+      t.time :opening_hours
       t.jsonb :coordinates
 
       t.timestamps

@@ -4,21 +4,57 @@ class EstablishmentService
   end
 
   def run
-    create_establishments
+    create_establishment
   rescue StandardError => e
     { success: false, error_message: e.message }
   end
 
+  def create_establishment
+    establishment = Establishment.new(establishment_params)
+    establishment.coordinates = find_coordinates(establishment)
+    establishment.save!
+    { success: true, establishment: establishment }
+  end
+
   private
 
-  def create_establishments
-    establishment = Establishment.new(params)
-    establishment.coordinates = find_coordinates(establishment)
-    establishment.save
-  end
-
   def find_coordinates(establishment)
-    Geocoder.search(establishment.address)[0]
+    full_address = establishment_full_address(establishment)
+    geocoded_data = Geocoder.search(full_address).first
+    if geocoded_data.present?
+      { latitude: geocoded_data.latitude, longitude: geocoded_data.longitude }
+    else
+      { latitude: nil, longitude: nil }
+    end
   end
 
+  def establishment_params
+    {
+      name: @params[:name],
+      fantasy_name: @params[:fantasy_name],
+      category: @params[:category],
+      cnpj: @params[:cnpj],
+      phone: @params[:phone],
+      whatsapp: @params[:whatsapp],
+      email: @params[:email],
+      owner_id: @params[:owner_id],
+      opening_hours: @params[:opening_hours],
+      closing_time: @params[:closing_time],
+      street: @params.dig(:address, :street),
+      city: @params.dig(:address, :city),
+      state: @params.dig(:address, :state),
+      zip_code: @params.dig(:address, :zip_code),
+      country: @params.dig(:address, :country)
+    }
+  end
+
+  def establishment_full_address(establishment)
+    [
+      establishment.street,
+      establishment.city,
+      establishment.state,
+      establishment.zip_code,
+      establishment.country
+    ].compact.join(', ')
+  end
 end
