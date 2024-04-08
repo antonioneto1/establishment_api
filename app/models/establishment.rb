@@ -10,10 +10,23 @@ class Establishment < ApplicationRecord
 
   validate :valid_coordinates
 
-  #before_validation :set_coordinates
-
   def full_address
     [street, city, state, country, zip_code].compact.join(', ')
+  end
+
+  def establishment_profile
+    {
+      nome: name,
+      nome_fantasia: fantasy_name,
+      categoria: category,
+      cnpj: cnpj,
+      telefone: phone,
+      whatsapp: whatsapp,
+      email: email,
+      proprietario: owner.name,
+      horario_de_funcionamento: "#{opening_hours.strftime('%H:%M')} até as #{closing_time.strftime('%H:%M')}",
+      endereco: full_address
+    }
   end
 
   private

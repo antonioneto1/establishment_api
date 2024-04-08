@@ -9,14 +9,15 @@ class Api::V1::EstablishmentsController < Api::V1::ApiController
 
   # GET /establishments/1 or /establishments/1.json
   def show
-    render json: @establishment
+    render json: @establishment&.establishment_profile
   end
 
   # POST /establishments or /establishments.json
   def create
-    @establishment = EstablishmentService.new(establishment_params).run
-    if @establishment[:success]
-      render json: @establishment, status: :created
+    @response = EstablishmentService.new(establishment_params).run
+    if @response[:success]
+      establishment = @response[:establishment]
+      render json: establishment.establishment_profile, status: :created
     else
       render json: @establishment.error, status: :unprocessable_entity
     end
