@@ -1,8 +1,9 @@
 Rails.application.routes.draw do
-  resources :establishments
-  resources :owners
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
-
-  # Defines the root path route ("/")
-  # root "articles#index"
+  namespace :api do
+    namespace :v1 do
+      resources :establishments
+      resources :owners
+      #post '/lectures/owners', to: 'owners#create', as: 'create'
+    end
+  end
 end

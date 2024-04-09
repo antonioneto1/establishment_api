@@ -5,7 +5,7 @@ class CreateOwners < ActiveRecord::Migration[7.0]
       t.string :phone
       t.string :email
       t.string :document_number
-      t.string :type_document
+      t.integer :type_document
 
       t.timestamps
     end

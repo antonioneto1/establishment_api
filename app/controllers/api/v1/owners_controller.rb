@@ -1,5 +1,6 @@
-class OwnersController < ApplicationController
+class Api::V1::OwnersController < Api::V1::ApiController
   before_action :set_owner, only: %i[ show edit update destroy ]
+  protect_from_forgery with: :null_session 
 
   # GET /owners or /owners.json
   def index
@@ -23,14 +24,10 @@ class OwnersController < ApplicationController
   def create
     @owner = Owner.new(owner_params)
 
-    respond_to do |format|
-      if @owner.save
-        format.html { redirect_to owner_url(@owner), notice: "Owner was successfully created." }
-        format.json { render :show, status: :created, location: @owner }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @owner.errors, status: :unprocessable_entity }
-      end
+    if @owner.save
+      render json: @owner, status: :ok
+    else
+      render json: { error: 'JSON inválido' }, status: :unprocessable_entity
     end
   end
 

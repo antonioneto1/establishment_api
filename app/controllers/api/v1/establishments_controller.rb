@@ -1,4 +1,4 @@
-class EstablishmentsController < ApplicationController
+class Api::V1::EstablishmentsController < Api::V1::ApiController
   before_action :set_establishment, only: %i[ show edit update destroy ]
 
   # GET /establishments or /establishments.json
@@ -21,16 +21,10 @@ class EstablishmentsController < ApplicationController
 
   # POST /establishments or /establishments.json
   def create
-    @establishment = Establishment.new(establishment_params)
+    response = EstablishmentService.new(establishment_params).run
 
     respond_to do |format|
-      if @establishment.save
-        format.html { redirect_to establishment_url(@establishment), notice: "Establishment was successfully created." }
-        format.json { render :show, status: :created, location: @establishment }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @establishment.errors, status: :unprocessable_entity }
-      end
+      format.json { render json: response }
     end
   end
 
