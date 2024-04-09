@@ -23,12 +23,22 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Build and run Docker container
+    - name: Get user UID and GID
+      id: get_uid_gid
       run: |
-        docker-compose -f docker-compose.yml up -d --build
-        docker-compose -f docker-compose.yml exec app bundle exec rake db:create
-        docker-compose -f docker-compose.yml exec app bundle exec rake db:schema:load
-        docker-compose -f docker-compose.yml exec app bundle exec rspec
+        echo "::set-output name=uid::$(id -u)"
+        echo "::set-output name=gid::$(id -g)"
+
+    - name: Build and run Docker container
+      env:
+        ARG_USER_UID: ${{ steps.get_uid_gid.outputs.uid }}
+        ARG_USER_GID: ${{ steps.get_uid_gid.outputs.gid }}
+      run: |
+        docker-compose -f docker-compose.yml build --build-arg ARG_USER_UID=${ARG_USER_UID} --build-arg ARG_USER_GID=${ARG_USER_GID}
+        docker-compose -f docker-compose.yml up -d
+        docker-compose -f docker-compose.yml exec -T app bundle exec rake db:create
+        docker-compose -f docker-compose.yml exec -T app bundle exec rake db:schema:load
+        docker-compose -f docker-compose.yml exec -T app bundle exec rspec
 
     - name: Shutdown Docker container
       run: docker-compose -f docker-compose.yml down
