@@ -10,7 +10,7 @@ class EstablishmentsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test "should get new" do
+  test "should get new is sucess" do
     get new_establishment_url
     assert_response :success
   end

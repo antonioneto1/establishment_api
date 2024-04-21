@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
-      postgresql:
+      postgres:
         image: postgres:14
         env:
           POSTGRES_USER: user
@@ -23,30 +23,28 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Get user UID and GID
-      id: get_uid_gid
-      run: |
-        echo "::set-output name=uid::$(id -u)"
-        echo "::set-output name=gid::$(id -g)"
+    - name: Set up Node.js and Yarn
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+        cache: 'yarn'
 
-    - name: Install dependencies
-      env:
-        ARG_USER_UID: ${{ steps.get_uid_gid.outputs.uid }}
-        ARG_USER_GID: ${{ steps.get_uid_gid.outputs.gid }}
+    - name: Install Ruby dependencies
       run: |
-        docker-compose -f docker-compose.yml build --build-arg ARG_USER_UID=${ARG_USER_UID} --build-arg ARG_USER_GID=${ARG_USER_GID}
-        docker-compose -f docker-compose.yml run --rm app bundle config set --local without 'development test'
-        docker-compose -f docker-compose.yml run --rm app bundle install
+        sudo apt-get install -y ruby-dev
+        gem install bundler
+        bundle config path vendor/bundle
+        bundle install --jobs 4 --retry 3
 
-    - name: Build and run Docker container
-      env:
-        ARG_USER_UID: ${{ steps.get_uid_gid.outputs.uid }}
-        ARG_USER_GID: ${{ steps.get_uid_gid.outputs.gid }}
+    - name: Install Node.js dependencies
+      run: yarn install
+
+    - name: Set up PostgreSQL
       run: |
-        docker-compose -f docker-compose.yml up -d
-        docker-compose -f docker-compose.yml exec -T app bundle exec rake db:create
-        docker-compose -f docker-compose.yml exec -T app bundle exec rake db:schema:load
-        docker-compose -f docker-compose.yml exec -T app bundle exec rspec
+        sudo service postgresql start
+        bundle exec rake db:create
+        bundle exec rake db:schema:load
 
-    - name: Shutdown Docker container
-      run: docker-compose -f docker-compose.yml down
+    - name: Run tests
+      run: |
+        bundle exec rspec

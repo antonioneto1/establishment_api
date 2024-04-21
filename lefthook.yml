@@ -1,0 +1,28 @@
+# EXAMPLE USAGE
+# Refer for explanation to following link:
+# https://github.com/evilmartians/lefthook/blob/master/docs/full_guide.md
+#
+# pre-push:
+#   commands:
+#     undercover: bundle exec undercover --compare origin/master
+#     packages-audit:
+#       tags: frontend security
+#       run: yarn audit
+#     gems-audit:
+#       tags: backend security
+#       run: bundle audit
+
+
+pre-commit:
+  parallel: true # tell Lefthook to utilise all cores
+  commands:
+    js:
+      glob: 'app/javascript/*.{js,ts,tsx}'
+      exclude: 'app/javascript/src/plugins/*.*'
+      run: yarn prettier --write {staged_files} && yarn eslint {staged_files} --fix && git add {staged_files}
+    css:
+      glob: '*.{css,scss}'
+      run: yarn prettier --write {staged_files} && git add {staged_files}
+    rubocop:
+      glob: '*.{rb,rake}'
+      run: bundle exec rubocop --force-exclusion --autocorrect-all {staged_files} -c .rubocop.yml && git add {staged_files}
