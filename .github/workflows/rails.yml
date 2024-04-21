@@ -19,6 +19,10 @@ jobs:
         ports:
           - 5432:5432
 
+    env:
+      ARG_USER_UID: ${{ github.actor_id }}
+      ARG_USER_GID: ${{ github.actor_gorup }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -31,7 +35,7 @@ jobs:
 
       - name: Build and test Rails app
         run: |
-          docker build --build-arg ARG_RUBY_VERSION=3.0.2 -t my-rails-app .
+          docker build --build-arg ARG_RUBY_VERSION=3.0.2 --build-arg ARG_USER_UID=${{ env.ARG_USER_UID }} --build-arg ARG_USER_GID=${{ env.ARG_USER_GID }} -t my-rails-app .
           docker run \
             -e RAILS_ENV=test \
             -e DATABASE_HOST=postgres \
