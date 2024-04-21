@@ -47,6 +47,10 @@ gem "tzinfo-data", platforms: %i[ mingw mswin x64_mingw jruby ]
 gem "bootsnap", require: false
 
 gem "geocoder"
+gem "rubocop"
+gem "rubocop-rails"
+gem "lefthook"
+gem "solargraph"
 
 # Use Sass to process CSS
 # gem "sassc-rails"
