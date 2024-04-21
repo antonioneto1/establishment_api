@@ -1,24 +1,30 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe Api::V1::EstablishmentsController, type: :controller do
+  render_views
+  let(:owner) { create(:owner) }
+
   let(:valid_attributes) do
     {
       name: 'Nome do Estabelecimento',
       fantasy_name: 'Nome Fantasia',
-      category: 'Categoria',
-      cnpj: '12345678901234',
-      phone: '1234567890',
-      whatsapp: '1234567890',
+      category: 'pet_shop',
+      cnpj: Faker::Company.brazilian_company_number,
+      phone: Faker::Number.number(digits: [10, 11].sample).to_s,
+      whatsapp: Faker::Number.number(digits: [10, 11].sample).to_s,
       email: 'email@example.com',
-      owner_id: 1,
+      owner_id: owner.id,
       opening_hours: '08:00',
       closing_time: '18:00',
       address: {
-        street: 'Rua Exemplo',
-        city: 'Cidade',
-        state: 'Estado',
-        zip_code: '12345-678',
-        country: 'País'
+        street: 'Avenida Monsenhor Tabosa 176',
+        city: 'Fortaleza',
+        state: 'Ceará',
+        zip_code: '60165-010',
+        country: 'Brasil',
+        neighborhood: 'Centro'
       }
     }
   end
@@ -26,9 +32,9 @@ RSpec.describe Api::V1::EstablishmentsController, type: :controller do
   describe 'POST #create' do
     context 'with valid params' do
       it 'creates a new Establishment' do
-        expect {
+        expect do
           post :create, params: { establishment: valid_attributes }
-        }.to change(Establishment, :count).by(1)
+        end.to change(Establishment, :count).by(1)
       end
 
       it 'renders a JSON response with the new establishment' do

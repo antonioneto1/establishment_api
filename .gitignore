@@ -46,3 +46,5 @@ app/assets/builds/*
 .vscode
 .solargraph.yml
 .solargraph_definitions.rb
+.vendored_gems
+/vendor
