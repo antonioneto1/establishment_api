@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateEstablishments < ActiveRecord::Migration[7.0]
   def change
     create_table :establishments do |t|
@@ -6,6 +8,7 @@ class CreateEstablishments < ActiveRecord::Migration[7.0]
       t.string :state
       t.string :zip_code
       t.string :country
+      t.string :neighborhood
       t.time :opening_hours
       t.jsonb :coordinates
 

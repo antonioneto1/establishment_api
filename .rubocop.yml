@@ -1,0 +1,13 @@
+# .rubocop.yml
+Metrics/AbcSize:
+  Enabled: false
+
+Metrics/MethodLength:
+  Enabled: false
+  Max: 62  # Defina o número desejado para o comprimento máximo do método
+
+Style/Documentation:
+  Enabled: false
+
+Metrics/BlockLength:
+  Enabled: false

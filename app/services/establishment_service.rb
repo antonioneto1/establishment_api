@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class EstablishmentService
   def initialize(params)
     @params = params
@@ -11,12 +13,19 @@ class EstablishmentService
 
   def create_establishment
     establishment = Establishment.new(establishment_params)
-    establishment.coordinates = find_coordinates(establishment)
+    establishment.coordinates = cached_coordinates(establishment)
     establishment.save!
     { success: true, establishment: establishment }
   end
 
   private
+
+  def cached_coordinates(establishment)
+    cached_result = Rails.cache.fetch(cache_key(establishment), expires_in: 1.day) do
+      find_coordinates(establishment)
+    end
+    { latitude: cached_result[:latitude], longitude: cached_result[:longitude] }
+  end
 
   def find_coordinates(establishment)
     full_address = establishment_full_address(establishment)
@@ -26,6 +35,10 @@ class EstablishmentService
     else
       { latitude: nil, longitude: nil }
     end
+  end
+
+  def cache_key(establishment)
+    "establishment_coordinates_#{establishment.id}"
   end
 
   def establishment_params
@@ -44,13 +57,15 @@ class EstablishmentService
       city: @params.dig(:address, :city),
       state: @params.dig(:address, :state),
       zip_code: @params.dig(:address, :zip_code),
-      country: @params.dig(:address, :country)
+      country: @params.dig(:address, :country),
+      neighborhood: @params.dig(:address, :neighborhood)
     }
   end
 
   def establishment_full_address(establishment)
     [
       establishment.street,
+      establishment.neighborhood,
       establishment.city,
       establishment.state,
       establishment.zip_code,

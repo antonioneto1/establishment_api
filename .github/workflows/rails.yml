@@ -19,32 +19,29 @@ jobs:
         ports:
           - 5432:5432
 
+    env:
+      ARG_USER_UID: ${{ github.actor_id }}
+      ARG_USER_GID: ${{ github.actor_gorup }}
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Set up Node.js and Yarn
-      uses: actions/setup-node@v2
-      with:
-        node-version: '14'
-        cache: 'yarn'
+      - name: Set up Node.js and Yarn
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+          cache: 'yarn'
 
-    - name: Install Ruby dependencies
-      run: |
-        sudo apt-get install -y ruby-dev
-        gem install bundler
-        bundle config path vendor/bundle
-        bundle install --jobs 4 --retry 3
-
-    - name: Install Node.js dependencies
-      run: yarn install
-
-    - name: Set up PostgreSQL
-      run: |
-        sudo service postgresql start
-        bundle exec rake db:create
-        bundle exec rake db:schema:load
-
-    - name: Run tests
-      run: |
-        bundle exec rspec
+      - name: Build and test Rails app
+        run: |
+          docker build --build-arg ARG_RUBY_VERSION=3.0.2 --build-arg ARG_USER_UID=${{ env.ARG_USER_UID }} --build-arg ARG_USER_GID=${{ env.ARG_USER_GID }} -t my-rails-app .
+          docker run \
+            -e RAILS_ENV=test \
+            -e DATABASE_HOST=postgres \
+            -e DATABASE_PORT=5432 \
+            -e DATABASE_USERNAME=user \
+            -e DATABASE_PASSWORD=password \
+            my-rails-app \
+            bundle exec rake db:create db:schema:load
+          docker run -e RAILS_ENV=test my-rails-app bundle exec rspec
