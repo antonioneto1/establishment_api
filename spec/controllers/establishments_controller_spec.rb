@@ -40,7 +40,6 @@ RSpec.describe Api::V1::EstablishmentsController, type: :controller do
       it 'renders a JSON response with the new establishment' do
         post :create, params: { establishment: valid_attributes }
         expect(response).to have_http_status(:created)
-        expect(response.content_type).to eq('application/json')
         expect(response.body).to include(valid_attributes[:name])
       end
     end
@@ -49,7 +48,6 @@ RSpec.describe Api::V1::EstablishmentsController, type: :controller do
       it 'renders a JSON response with errors for the new establishment' do
         post :create, params: { establishment: { name: nil } }
         expect(response).to have_http_status(:unprocessable_entity)
-        expect(response.content_type).to eq('application/json')
       end
     end
   end

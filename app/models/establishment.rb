@@ -18,7 +18,7 @@ class Establishment < ApplicationRecord
   validate :valid_coordinates
   validate :cnpj_validity
 
-  before_save :set_coordinates
+  # before_save :set_coordinates
 
   def full_address
     [street, neighborhood, city, state, zip_code, country].compact.join(', ')
@@ -51,7 +51,7 @@ class Establishment < ApplicationRecord
   end
 
   def format_cnpj
-    CNPJ.new(document).formatted
+    CNPJ.new(cnpj).formatted
   end
 
   def valid_coordinates
