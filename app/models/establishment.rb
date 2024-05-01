@@ -22,22 +22,20 @@ class Establishment < ApplicationRecord
 
   def full_address
     [street, neighborhood, city, state, zip_code, country].compact.join(', ')
-
-    'Av. Monsenhor Tabosa, 176 - Centro, Fortaleza - CE, 60165-010'
   end
 
-  def establishment_profile
+  def profile
     {
-      nome: name,
-      nome_fantasia: fantasy_name,
-      categoria: category,
+      name: name,
+      fantasy_name: fantasy_name,
+      category: category,
       cnpj: format_cnpj,
-      telefone: phone,
+      phone: phone,
       whatsapp: whatsapp,
       email: email,
-      proprietario: owner.name,
-      horario_de_funcionamento: "#{opening_hours.strftime('%H:%M')} até as #{closing_time.strftime('%H:%M')}",
-      endereco: full_address
+      owner_name: owner.name,
+      opening_hours: "#{opening_hours.strftime('%H:%M')} até as #{closing_time.strftime('%H:%M')}",
+      full_address: full_address
     }
   end
 

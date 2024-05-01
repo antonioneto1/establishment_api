@@ -13,7 +13,7 @@ module Api
 
       # GET /establishments/1 or /establishments/1.json
       def show
-        render json: @establishment&.establishment_profile
+        render json: @establishment&.profile
       end
 
       # POST /establishments or /establishments.json
@@ -21,7 +21,7 @@ module Api
         @response = EstablishmentService.new(establishment_params).run
         if @response[:success]
           establishment = @response[:establishment]
-          render json: establishment.establishment_profile, status: :created
+          render json: establishment.profile, status: :created
         else
           render json: @response[:error], status: :unprocessable_entity
         end

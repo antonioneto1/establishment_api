@@ -19,6 +19,7 @@ pickle-email-*.html
 .idea/**/*
 .rake_tasks
 /tmp
+/log/
 dump.rdb
 public/logos
 passenger.*
