@@ -7,15 +7,16 @@ class EstablishmentService
 
   def run
     create_establishment
-  rescue StandardError => e
-    { success: false, error_message: e.message }
   end
 
   def create_establishment
     establishment = Establishment.new(establishment_params)
     establishment.coordinates = cached_coordinates(establishment)
-    establishment.save!
-    { success: true, establishment: establishment }
+    if establishment.save
+      { success: true, establishment: establishment }
+    else
+      { success: false, error_message: establishment.errors.full_messages.join(', ') }
+    end
   end
 
   private
